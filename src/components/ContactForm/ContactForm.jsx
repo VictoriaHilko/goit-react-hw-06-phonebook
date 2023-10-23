@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { nanoid } from 'nanoid';
 import { getContacts } from 'redux/selectors';
 import { addContact } from 'redux/contactsSlice';
+import css from './ContactForm.module.css';
 
 const initialValues = {
   name: '',
@@ -40,9 +41,9 @@ export const ContactForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className={css.form} onSubmit={handleSubmit}>
       <label>Name: </label>
-      <input
+      <input className={css.formInput}
         type="text"
         name="name"
         value={formValues.name}
@@ -50,14 +51,14 @@ export const ContactForm = () => {
         required
       />
       <label>Number: </label>
-      <input
+      <input className={css.formInput}
         type="tel"
         name="number"
         value={formValues.number}
         onChange={handleInputChange}
         required
       />
-      <button type="submit">Save contact</button>
+      <button className={css.saveButton} type="submit">Save contact</button>
     </form>
   );
 };
