@@ -1,64 +1,63 @@
-// import { nanoid } from 'nanoid';
-import { useState } from 'react';
-import css from './ContactForm.module.css';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { nanoid } from 'nanoid';
+import { getContacts } from 'redux/selectors';
+import { addContact } from 'redux/contactsSlice';
 
-export const ContactForm = ({ onSubmit }) => {
+const initialValues = {
+  name: '',
+  number: '',
+};
 
-    const [name, setName] = useState('');
-    const [number, setNumber] = useState('');
+export const ContactForm = () => {
+  const dispatch = useDispatch();
+  const contacts = useSelector(getContacts);
+  const [formValues, setFormValues] = useState(initialValues);
 
-    const reset = () => {
-        setName('');
-        setNumber('');
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const newContact = {
+      id: nanoid(),
+      name: formValues.name,
+      number: formValues.number,
     };
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
+    if (contacts.find((contact) => contact.name === newContact.name)) {
+      return alert(`${newContact.name} is already in contacts`);
+    }
 
-        const data = {
-            name,
-            number,
-            id: nanoid()
-        }
+    dispatch(addContact(newContact));
+    setFormValues(initialValues); // Reset the form
+  };
 
-        onSubmit(data);
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormValues({
+      ...formValues,
+      [name]: value,
+    });
+  };
 
-        reset();
-    };
-
-    const handleChange = ({ target: { name, value } }) => {
-        switch (name) {
-            case 'name':
-                setName(value);
-                break;
-
-            case 'number':
-                setNumber(value);
-                break;
-
-            default:
-                break;
-        }
-    };
-
-    return (
-        <form onSubmit={handleSubmit} className={css.form}>
-            <label className={css.formTitle}>Name: </label>
-            <input className={css.formInput}
-                type="text"
-                name="name"
-                value={name}
-                required
-                onChange={handleChange} />
-            <label className={css.formTitle}>Number: </label>
-            <input className={css.formInput}
-                type="tel"
-                name="number"
-                value={number}
-                required
-                onChange={handleChange} />
-            <button className={css.saveButton}>Save contact</button>
-        </form>
-    );
+  return (
+    <form onSubmit={handleSubmit}>
+      <label>Name: </label>
+      <input
+        type="text"
+        name="name"
+        value={formValues.name}
+        onChange={handleInputChange}
+        required
+      />
+      <label>Number: </label>
+      <input
+        type="tel"
+        name="number"
+        value={formValues.number}
+        onChange={handleInputChange}
+        required
+      />
+      <button type="submit">Save contact</button>
+    </form>
+  );
 };
